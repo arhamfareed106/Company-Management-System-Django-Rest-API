@@ -1,13 +1,20 @@
-from django.url import HttpResponce
+from django.http import HttpResponse,JsonResponse
 
 def home_page(request):
-    print()
+    print("home page requested")
+    friends= [
+        'ali',
+        'ahmad',
+        'raza',
+    ]
+    return JsonResponse(friends, safe=False)
     
 
 
-class home_page(HttpResponce):
-    pass    
 
+
+
+    
 
 
 
