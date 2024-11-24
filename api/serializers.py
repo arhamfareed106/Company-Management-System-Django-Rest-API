@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from api.models import Company, Employee  # Ensure Employee model is imported
+from .models import Company, Employee
 
-# Serializer for the Company model
-class CompanySerializer(serializers.HyperlinkedModelSerializer):
+class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = "__all__"
+        fields = '__all__'  # Or list the fields you want to expose, e.g., ['id', 'name', 'location', 'type']
 
-# Serializer for the Employee model
-class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
+class EmployeeSerializer(serializers.ModelSerializer):
+    company = CompanySerializer(read_only=True)  # Nested serializer to show company info
+    
     class Meta:
         model = Employee
-        fields = "__all__"
+        fields = '__all__'  # Or list the fields you want to expose

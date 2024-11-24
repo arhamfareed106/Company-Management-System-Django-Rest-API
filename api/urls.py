@@ -1,13 +1,14 @@
-from django.contrib import admin
-from django.urls import include, path
-from api.views import CompanyViewSet, EmployeeViewSet
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import CompanyViewSet, EmployeeViewSet
 
+# Create a DefaultRouter and register the viewsets
 router = DefaultRouter()
 router.register(r'companies', CompanyViewSet)
 router.register(r'employees', EmployeeViewSet)
 
+# API URL configuration
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Admin site
-    path('', include(router.urls)),  # API routes
+    # This will include all the router-generated URLs
+    path('', include(router.urls)),
 ]
