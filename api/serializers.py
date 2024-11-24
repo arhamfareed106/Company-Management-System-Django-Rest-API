@@ -1,11 +1,14 @@
-import hyperlink
 from rest_framework import serializers
-from api.models import Company
+from api.models import Company, Employee  # Ensure Employee model is imported
 
-# Create serializers 
-
-class CompanySerializer(serializers.HyperlinkModelSerializer):
+# Serializer for the Company model
+class CompanySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model=Company
-        fields= "__all__"
+        model = Company
+        fields = "__all__"
 
+# Serializer for the Employee model
+class EmployeeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Employee
+        fields = "__all__"
