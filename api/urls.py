@@ -9,6 +9,5 @@ router.register(r'employees', EmployeeViewSet)
 
 # API URL configuration
 urlpatterns = [
-    # This will include all the router-generated URLs
     path('', include(router.urls)),
 ]

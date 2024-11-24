@@ -23,15 +23,15 @@ class Company(models.Model):
 class Employee(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    address = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
     phone = models.CharField(max_length=100)
     about = models.TextField()
     position = models.CharField(
         max_length=500, 
         choices=(
-            ('Manager', 'Manager'),
-            ('Software Developer', 'Software Developer'),
-            ('Project Leader', 'Project Leader'),
+            ('Manager', 'manager'),
+            ('Software Developer', 'software developer'),
+            ('Project Leader', 'project leader'),
         )
     )
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='employees')
