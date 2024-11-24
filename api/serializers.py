@@ -8,7 +8,8 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = '__all__'  # Or list the fields you want to expose, e.g., ['id', 'name', 'location', 'type']
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    company = CompanySerializer(read_only=True)  # Nested serializer to show company info
+    id = serializers.ReadOnlyField()
+    # company = CompanySerializer(read_only=True)  # Nested serializer to show company info
     
     class Meta:
         model = Employee

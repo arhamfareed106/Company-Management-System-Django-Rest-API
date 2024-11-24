@@ -17,7 +17,7 @@ class Company(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return self.name + self.location
 
 
 class Employee(models.Model):
