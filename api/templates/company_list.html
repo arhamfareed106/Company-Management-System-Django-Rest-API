@@ -1,48 +1,50 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Companies{% endblock %}
 
 {% block content %}
-<div class="animate-fade-in">
+<div class="space-y-6 animate-fade-in">
+    <!-- Header -->
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-white">Companies</h1>
-        <button onclick="location.href='{% url 'company-create' %}'" 
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200">
-            Add Company
-        </button>
+        <h1 class="text-3xl font-bold text-indigo-400">Companies</h1>
+        <a href="{% url 'company_create' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+            <i class="fas fa-plus mr-2"></i>Add Company
+        </a>
     </div>
 
+    <!-- Companies Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for company in companies %}
-        <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover-scale">
-            <div class="flex justify-between items-start mb-4">
-                <h2 class="text-xl font-semibold text-white">{{ company.name }}</h2>
-                <span class="px-2 py-1 text-sm rounded-full {% if company.type == 'IT' %}bg-green-600{% else %}bg-blue-600{% endif %} text-white">
-                    {{ company.type }}
-                </span>
-            </div>
-            <div class="text-gray-300 mb-4">
-                <p class="mb-2"><i class="fas fa-map-marker-alt mr-2"></i>{{ company.location }}</p>
-                <p class="line-clamp-3">{{ company.about }}</p>
-            </div>
-            <div class="flex justify-between items-center mt-4">
-                <span class="text-sm text-gray-400">
-                    Added: {{ company.added_date|date:"M d, Y" }}
-                </span>
-                <div class="space-x-2">
-                    <a href="{% url 'company-detail' company.pk %}" 
-                       class="inline-block bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors duration-200">
-                        View Details
-                    </a>
-                    <a href="{% url 'company-employees' company.pk %}"
-                       class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded transition-colors duration-200">
-                        Employees
-                    </a>
+        <div class="bg-dark-200 rounded-lg shadow-lg border border-dark-100 overflow-hidden hover-scale">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-semibold text-indigo-400">{{ company.name }}</h2>
+                    <span class="px-3 py-1 text-sm rounded-full {% if company.type == 'TECH' %}bg-indigo-900 text-indigo-300{% elif company.type == 'FIN' %}bg-green-900 text-green-300{% elif company.type == 'HEALTH' %}bg-blue-900 text-blue-300{% elif company.type == 'EDU' %}bg-yellow-900 text-yellow-300{% else %}bg-gray-900 text-gray-300{% endif %}">
+                        {{ company.get_type_display }}
+                    </span>
                 </div>
+                <div class="space-y-2 text-gray-400">
+                    <p><i class="fas fa-map-marker-alt w-6"></i> {{ company.location }}</p>
+                    <p><i class="fas fa-envelope w-6"></i> {{ company.email }}</p>
+                    <p><i class="fas fa-phone w-6"></i> {{ company.phone }}</p>
+                    <p><i class="fas fa-dollar-sign w-6"></i> {{ company.revenue }}</p>
+                </div>
+            </div>
+            <div class="bg-dark-100 px-6 py-4 flex justify-between items-center">
+                <a href="{% url 'company_update' company.id %}" class="text-indigo-400 hover:text-indigo-300 transition-colors duration-200">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </a>
+                <a href="{% url 'company_delete' company.id %}" class="text-red-400 hover:text-red-300 transition-colors duration-200">
+                    <i class="fas fa-trash-alt mr-2"></i>Delete
+                </a>
+                <a href="{% url 'company_employees' company.id %}" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
+                    <i class="fas fa-users mr-2"></i>Employees
+                </a>
             </div>
         </div>
         {% empty %}
-        <div class="col-span-full text-center py-12 text-gray-400">
-            <p class="text-xl">No companies found.</p>
-            <p class="mt-2">Add your first company to get started!</p>
+        <div class="col-span-full text-center py-12">
+            <p class="text-gray-400 text-lg">No companies found. Add your first company!</p>
         </div>
         {% endfor %}
     </div>

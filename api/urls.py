@@ -1,62 +1,43 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CompanyViewSet, EmployeeViewSet, HomeView, AnalyticsDashboardView
+from django.urls import path
+from .views import (
+    CompanyViewSet, 
+    EmployeeViewSet, 
+    HomeView, 
+    AnalyticsDashboardView,
+    CompanyListView,
+    EmployeeListView,
+    CompanyCreateView,
+    CompanyUpdateView,
+    CompanyDeleteView,
+    EmployeeCreateView,
+    EmployeeUpdateView,
+    EmployeeDeleteView
+)
 
-# Create a router for API endpoints
-router = DefaultRouter()
-router.register(r'api/companies', CompanyViewSet, basename='company-api')
-router.register(r'api/employees', EmployeeViewSet, basename='employee-api')
-
-# URL patterns for both API and frontend views
 urlpatterns = [
-    # Home page
+    # Frontend URLs
     path('', HomeView.as_view(), name='home'),
     
-    # Analytics Dashboard
-    path('analytics/', AnalyticsDashboardView.as_view(), name='analytics-dashboard'),
+    # Company Frontend URLs
+    path('companies/', CompanyListView.as_view(), name='company_list'),
+    path('companies/create/', CompanyCreateView.as_view(), name='company_create'),
+    path('companies/<int:pk>/update/', CompanyUpdateView.as_view(), name='company_update'),
+    path('companies/<int:pk>/delete/', CompanyDeleteView.as_view(), name='company_delete'),
     
-    # API URLs
-    path('', include(router.urls)),
+    # Employee Frontend URLs
+    path('employees/', EmployeeListView.as_view(), name='employee_list'),
+    path('employees/create/', EmployeeCreateView.as_view(), name='employee_create'),
+    path('employees/<int:pk>/update/', EmployeeUpdateView.as_view(), name='employee_update'),
+    path('employees/<int:pk>/delete/', EmployeeDeleteView.as_view(), name='employee_delete'),
     
-    # Frontend URLs
-    path('companies/', CompanyViewSet.as_view({
-        'get': 'list',
-        'post': 'create'
-    }), name='company-list'),
+    # Analytics URL
+    path('analytics/', AnalyticsDashboardView.as_view(), name='analytics'),
     
-    path('companies/<int:pk>/', CompanyViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    }), name='company-detail'),
+    # API URLs for Companies
+    path('api/companies/', CompanyViewSet.as_view({'get': 'list', 'post': 'create'}), name='api_company_list'),
+    path('api/companies/<int:pk>/', CompanyViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='api_company_detail'),
     
-    path('companies/create/', CompanyViewSet.as_view({
-        'get': 'create',
-        'post': 'create'
-    }), name='company-create'),
-    
-    path('companies/<int:pk>/employees/', CompanyViewSet.as_view({
-        'get': 'employees'
-    }), name='company-employees'),
-    
-    path('employees/', EmployeeViewSet.as_view({
-        'get': 'list',
-        'post': 'create'
-    }), name='employee-list'),
-    
-    path('employees/<int:pk>/', EmployeeViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    }), name='employee-detail'),
-    
-    path('employees/create/', EmployeeViewSet.as_view({
-        'get': 'create',
-        'post': 'create'
-    }), name='employee-create'),
-    
-    path('employees/<int:pk>/edit/', EmployeeViewSet.as_view({
-        'get': 'update',
-        'put': 'update'
-    }), name='employee-edit'),
+    # API URLs for Employees
+    path('api/employees/', EmployeeViewSet.as_view({'get': 'list', 'post': 'create'}), name='api_employee_list'),
+    path('api/employees/<int:pk>/', EmployeeViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='api_employee_detail'),
 ]

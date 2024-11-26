@@ -1,121 +1,116 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard{% endblock %}
 
 {% block content %}
-<div class="min-h-screen animate-fade-in">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-3xl font-bold text-white mb-8">Analytics Dashboard</h1>
+<div class="space-y-6 animate-fade-in">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-400 mb-2">Analytics Dashboard</h1>
+        <p class="text-gray-400">Real-time insights into your business metrics</p>
+    </div>
 
-        <!-- Company Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Company Overview</h3>
-                <div class="space-y-3">
-                    <p class="text-gray-300">Total Companies: {{ company_count }}</p>
-                    <p class="text-gray-300">Active Companies: {{ active_companies }}</p>
-                    <p class="text-gray-300">Total Revenue: ${{ total_revenue }}</p>
-                </div>
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- Company Stats -->
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100 hover-scale">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-indigo-400">Companies</h3>
+                <i class="fas fa-building text-2xl text-indigo-400"></i>
             </div>
-
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Employee Statistics</h3>
-                <div class="space-y-3">
-                    <p class="text-gray-300">Total Employees: {{ employee_count }}</p>
-                    <p class="text-gray-300">Avg Salary: ${{ avg_salary }}</p>
-                    <p class="text-gray-300">Top Performance: {{ top_performers }}%</p>
-                </div>
-            </div>
-
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Project Metrics</h3>
-                <div class="space-y-3">
-                    <p class="text-gray-300">Active Projects: {{ active_projects }}</p>
-                    <p class="text-gray-300">Completed Projects: {{ completed_projects }}</p>
-                    <p class="text-gray-300">Avg Completion: {{ avg_completion }}%</p>
-                </div>
-            </div>
+            <p class="text-3xl font-bold text-gray-300 mb-2">{{ company_count }}</p>
+            <p class="text-sm text-gray-400">Active Companies: {{ active_companies }}</p>
         </div>
 
+        <!-- Employee Stats -->
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100 hover-scale">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-indigo-400">Employees</h3>
+                <i class="fas fa-users text-2xl text-indigo-400"></i>
+            </div>
+            <p class="text-3xl font-bold text-gray-300 mb-2">{{ employee_count }}</p>
+            <p class="text-sm text-gray-400">Avg Salary: ${{ avg_salary|floatformat:2 }}</p>
+        </div>
+
+        <!-- Performance Stats -->
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100 hover-scale">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-indigo-400">Performance</h3>
+                <i class="fas fa-chart-line text-2xl text-indigo-400"></i>
+            </div>
+            <p class="text-3xl font-bold text-gray-300 mb-2">{{ top_performers }}%</p>
+            <p class="text-sm text-gray-400">Top Performers</p>
+        </div>
+
+        <!-- Project Stats -->
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100 hover-scale">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-indigo-400">Projects</h3>
+                <i class="fas fa-project-diagram text-2xl text-indigo-400"></i>
+            </div>
+            <p class="text-3xl font-bold text-gray-300 mb-2">{{ active_projects }}</p>
+            <p class="text-sm text-gray-400">Avg Completion: {{ avg_completion }}%</p>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Department Distribution -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Department Distribution</h3>
-                <div class="relative" style="height: 300px;">
-                    <canvas id="departmentChart"></canvas>
-                </div>
-            </div>
-
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Performance Distribution</h3>
-                <div class="relative" style="height: 300px;">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100">
+            <h3 class="text-xl font-semibold text-indigo-400 mb-4">Department Distribution</h3>
+            <canvas id="departmentChart" class="w-full"></canvas>
         </div>
 
-        <!-- Project Timeline -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-8">
-            <h3 class="text-lg font-semibold text-white mb-4">Project Timeline</h3>
-            <div class="relative" style="height: 200px;">
-                <canvas id="projectTimeline"></canvas>
-            </div>
-        </div>
-
-        <!-- Top Performers Table -->
-        <div class="bg-gray-800 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Top Performers</h3>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Employee</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Company</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Projects</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-700">
-                        {% for employee in top_employees %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.get_position_display }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.company.name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.projects_completed }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.get_performance_rating_display }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <!-- Performance Distribution -->
+        <div class="bg-dark-200 p-6 rounded-lg shadow-lg border border-dark-100">
+            <h3 class="text-xl font-semibold text-indigo-400 mb-4">Performance Distribution</h3>
+            <canvas id="performanceChart" class="w-full"></canvas>
         </div>
     </div>
 </div>
 
-{% block extra_js %}
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Department Distribution Chart
     const departmentCtx = document.getElementById('departmentChart').getContext('2d');
     new Chart(departmentCtx, {
-        type: 'pie',
+        type: 'bar',
         data: {
             labels: {{ department_labels|safe }},
             datasets: [{
+                label: 'Employees',
                 data: {{ department_data|safe }},
-                backgroundColor: [
-                    '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
-                    '#8B5CF6', '#EC4899', '#6366F1'
-                ]
+                backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                borderColor: 'rgba(99, 102, 241, 1)',
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'right',
                     labels: {
-                        color: '#D1D5DB'
+                        color: '#9ca3af'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(75, 85, 99, 0.2)'
+                    },
+                    ticks: {
+                        color: '#9ca3af'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(75, 85, 99, 0.2)'
+                    },
+                    ticks: {
+                        color: '#9ca3af'
                     }
                 }
             }
@@ -125,91 +120,39 @@
     // Performance Distribution Chart
     const performanceCtx = document.getElementById('performanceChart').getContext('2d');
     new Chart(performanceCtx, {
-        type: 'bar',
+        type: 'doughnut',
         data: {
             labels: {{ performance_labels|safe }},
             datasets: [{
-                label: 'Employees',
                 data: {{ performance_data|safe }},
-                backgroundColor: '#3B82F6'
+                backgroundColor: [
+                    'rgba(52, 211, 153, 0.8)',  // Green for Excellent
+                    'rgba(147, 197, 253, 0.8)', // Blue for Good
+                    'rgba(251, 191, 36, 0.8)',  // Yellow for Average
+                    'rgba(251, 146, 60, 0.8)',  // Orange for Below Average
+                    'rgba(239, 68, 68, 0.8)'    // Red for Poor
+                ],
+                borderColor: [
+                    'rgba(52, 211, 153, 1)',
+                    'rgba(147, 197, 253, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 146, 60, 1)',
+                    'rgba(239, 68, 68, 1)'
+                ],
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#D1D5DB'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#D1D5DB'
-                    }
-                }
-            },
             plugins: {
                 legend: {
+                    position: 'bottom',
                     labels: {
-                        color: '#D1D5DB'
-                    }
-                }
-            }
-        }
-    });
-
-    // Project Timeline Chart
-    const timelineCtx = document.getElementById('projectTimeline').getContext('2d');
-    new Chart(timelineCtx, {
-        type: 'line',
-        data: {
-            labels: {{ timeline_labels|safe }},
-            datasets: [{
-                label: 'Active Projects',
-                data: {{ timeline_data|safe }},
-                borderColor: '#3B82F6',
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#D1D5DB'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#D1D5DB'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#D1D5DB'
+                        color: '#9ca3af'
                     }
                 }
             }
         }
     });
 </script>
-{% endblock %}
 {% endblock %}

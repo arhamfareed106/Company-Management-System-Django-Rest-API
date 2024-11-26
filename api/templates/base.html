@@ -3,76 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Management System</title>
+    <title>{% block title %}Django API Dashboard{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#1e40af',
-                        secondary: '#3b82f6',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-in': 'slideIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(0)' },
-                        },
-                    },
-                },
-            },
+                        dark: {
+                            '50': '#f8fafc',
+                            '100': '#1e293b',
+                            '200': '#1a1f2e',
+                            '300': '#0f172a',
+                            '400': '#0d1424',
+                        }
+                    }
+                }
+            }
         }
     </script>
     <style>
-        .hover-scale { transition: transform 0.2s; }
-        .hover-scale:hover { transform: scale(1.02); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
     </style>
 </head>
-<body class="dark:bg-gray-900 min-h-screen">
+<body class="bg-dark-300 min-h-screen text-gray-300">
     <!-- Navigation -->
-    <nav class="bg-gray-800 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+    <nav class="bg-dark-200 shadow-lg border-b border-dark-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <span class="text-xl font-bold">EMS</span>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{% url 'company-list' %}" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Companies</a>
-                            <a href="{% url 'employee-list' %}" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Employees</a>
-                        </div>
-                    </div>
+                    <a href="/" class="flex items-center space-x-3 text-indigo-400 hover:text-indigo-300 transition-colors duration-200">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                        <span class="font-bold text-xl">API Dashboard</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'company_list' %}" class="hover-scale px-3 py-2 rounded-md text-gray-300 hover:text-indigo-400 hover:bg-dark-100 transition-all duration-200">Companies</a>
+                    <a href="{% url 'employee_list' %}" class="hover-scale px-3 py-2 rounded-md text-gray-300 hover:text-indigo-400 hover:bg-dark-100 transition-all duration-200">Employees</a>
+                    <a href="{% url 'analytics' %}" class="hover-scale px-3 py-2 rounded-md text-gray-300 hover:text-indigo-400 hover:bg-dark-100 transition-all duration-200">Analytics</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Content -->
-    <main class="container mx-auto px-4 py-8">
-        {% block content %}
-        {% endblock %}
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-4 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 Enterprise Management System. All rights reserved.</p>
+    <footer class="bg-dark-200 shadow-lg mt-auto border-t border-dark-100">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 Django API Dashboard. All rights reserved.</p>
+            </div>
         </div>
     </footer>
-
-    <script>
-        // Add dark mode by default
-        document.documentElement.classList.add('dark');
-    </script>
 </body>
 </html>

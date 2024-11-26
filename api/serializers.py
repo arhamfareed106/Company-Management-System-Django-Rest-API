@@ -2,64 +2,65 @@ from rest_framework import serializers
 from .models import Company, Employee, Project
 
 class CompanySerializer(serializers.ModelSerializer):
-    company_id= serializers.ReadOnlyField()
     employee_count = serializers.SerializerMethodField()
-    active_projects = serializers.SerializerMethodField()
-    department_distribution = serializers.SerializerMethodField()
-    total_salary_expense = serializers.SerializerMethodField()
+    project_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
-        fields = '__all__'
-        extra_fields = ['employee_count', 'active_projects', 'department_distribution', 'total_salary_expense']
+        fields = [
+            'id', 'name', 'location', 'type', 'website', 
+            'established_date', 'description', 'slug',
+            'employee_count', 'project_count',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['slug', 'created_at', 'updated_at']
 
     def get_employee_count(self, obj):
         return obj.employee_set.count()
 
-    def get_active_projects(self, obj):
-        return obj.project_set.exclude(status='COMP').count()
-
-    def get_department_distribution(self, obj):
-        return obj.get_department_distribution()
-
-    def get_total_salary_expense(self, obj):
-        return sum(employee.salary for employee in obj.employee_set.all())
+    def get_project_count(self, obj):
+        return obj.project_set.count()
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-    experience_years = serializers.SerializerMethodField()
-    company_name = serializers.SerializerMethodField()
+    company_name = serializers.CharField(source='company.name', read_only=True)
     project_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
-        fields = '__all__'
-        extra_fields = ['experience_years', 'company_name', 'project_count']
-
-    def get_experience_years(self, obj):
-        return obj.calculate_experience()
-
-    def get_company_name(self, obj):
-        return obj.company.name
+        fields = [
+            'id', 'name', 'email', 'phone', 'position',
+            'company', 'company_name', 'hire_date', 'salary',
+            'is_active', 'project_count', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
 
     def get_project_count(self, obj):
         return obj.projects.count()
 
+    def validate_email(self, value):
+        if Employee.objects.filter(email=value).exists():
+            raise serializers.ValidationError("An employee with this email already exists.")
+        return value
+
 class ProjectSerializer(serializers.ModelSerializer):
-    team_size = serializers.SerializerMethodField()
-    duration_days = serializers.SerializerMethodField()
-    company_name = serializers.SerializerMethodField()
+    company_name = serializers.CharField(source='company.name', read_only=True)
+    employee_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = '__all__'
-        extra_fields = ['team_size', 'duration_days', 'company_name']
+        fields = [
+            'id', 'name', 'description', 'company', 'company_name',
+            'employees', 'start_date', 'end_date', 'status',
+            'budget', 'employee_count', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
 
-    def get_team_size(self, obj):
-        return obj.team_members.count()
+    def get_employee_count(self, obj):
+        return obj.employees.count()
 
-    def get_duration_days(self, obj):
-        return obj.get_duration()
-
-    def get_company_name(self, obj):
-        return obj.company.name
+    def validate(self, data):
+        if data.get('end_date') and data['start_date'] > data['end_date']:
+            raise serializers.ValidationError({
+                "end_date": "End date must be after start date."
+            })
+        return data
