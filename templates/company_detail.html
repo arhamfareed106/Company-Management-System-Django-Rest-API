@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ company.name }} - Company Details{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Company Header -->
+        <div class="bg-gray-800 shadow rounded-lg overflow-hidden mb-8">
+            <div class="px-6 py-8">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-white">{{ company.name }}</h1>
+                    <div class="flex space-x-3">
+                        <a href="{% url 'company_update' company.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                            Edit Company
+                        </a>
+                        <a href="{% url 'company_delete' company.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Company Details -->
+                <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-300">Location</h3>
+                        <p class="mt-1 text-gray-400">{{ company.location }}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-300">Type</h3>
+                        <p class="mt-1 text-gray-400">{{ company.get_type_display }}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-300">Established Date</h3>
+                        <p class="mt-1 text-gray-400">{{ company.established_date|default:"Not specified" }}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-300">Revenue</h3>
+                        <p class="mt-1 text-gray-400">${{ company.revenue|floatformat:2 }}</p>
+                    </div>
+                    {% if company.website %}
+                    <div class="sm:col-span-2">
+                        <h3 class="text-lg font-medium text-gray-300">Website</h3>
+                        <a href="{{ company.website }}" target="_blank" class="mt-1 text-indigo-400 hover:text-indigo-300">{{ company.website }}</a>
+                    </div>
+                    {% endif %}
+                    {% if company.description %}
+                    <div class="sm:col-span-2">
+                        <h3 class="text-lg font-medium text-gray-300">Description</h3>
+                        <p class="mt-1 text-gray-400">{{ company.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Section -->
+        <div class="bg-gray-800 shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-white">Employees</h2>
+                    <a href="{% url 'employee_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                        Add Employee
+                    </a>
+                </div>
+            </div>
+            <div class="px-6 py-5">
+                {% if employees %}
+                <div class="flow-root">
+                    <ul class="-my-5 divide-y divide-gray-700">
+                        {% for employee in employees %}
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-white truncate">
+                                        {{ employee.name }}
+                                    </p>
+                                    <p class="text-sm text-gray-400 truncate">
+                                        {{ employee.get_position_display }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {% if employee.performance == 'EXC' %}bg-green-100 text-green-800
+                                        {% elif employee.performance == 'GOOD' %}bg-blue-100 text-blue-800
+                                        {% elif employee.performance == 'AVG' %}bg-yellow-100 text-yellow-800
+                                        {% elif employee.performance == 'BELOW' %}bg-orange-100 text-orange-800
+                                        {% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ employee.get_performance_display }}
+                                    </span>
+                                    <a href="{% url 'employee_update' employee.pk %}" class="inline-flex items-center px-3 py-1 border border-gray-600 rounded-md text-sm text-gray-300 bg-gray-700 hover:bg-gray-600">
+                                        Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <p class="text-center text-gray-400 py-4">No employees found for this company.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

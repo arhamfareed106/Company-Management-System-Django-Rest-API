@@ -1,43 +1,30 @@
-from django.urls import path
-from .views import (
-    CompanyViewSet, 
-    EmployeeViewSet, 
-    HomeView, 
-    AnalyticsDashboardView,
-    CompanyListView,
-    EmployeeListView,
-    CompanyCreateView,
-    CompanyUpdateView,
-    CompanyDeleteView,
-    EmployeeCreateView,
-    EmployeeUpdateView,
-    EmployeeDeleteView
-)
+from django.urls import path, include
+from rest_framework import routers
+from . import views
+
+router = routers.DefaultRouter()
+router.register(r'companies', views.CompanyViewSet)
+router.register(r'employees', views.EmployeeViewSet)
 
 urlpatterns = [
-    # Frontend URLs
-    path('', HomeView.as_view(), name='home'),
+    # API endpoints
+    path('api/', include(router.urls)),
     
-    # Company Frontend URLs
-    path('companies/', CompanyListView.as_view(), name='company_list'),
-    path('companies/create/', CompanyCreateView.as_view(), name='company_create'),
-    path('companies/<int:pk>/update/', CompanyUpdateView.as_view(), name='company_update'),
-    path('companies/<int:pk>/delete/', CompanyDeleteView.as_view(), name='company_delete'),
+    # Frontend views
+    path('', views.HomeView.as_view(), name='home'),
+    path('companies/', views.CompanyListView.as_view(), name='company_list'),
+    path('companies/create/', views.CompanyCreateView.as_view(), name='company_create'),
+    path('companies/<slug:slug>/', views.CompanyDetailView.as_view(), name='company_detail'),
+    path('companies/<int:pk>/update/', views.CompanyUpdateView.as_view(), name='company_update'),
+    path('companies/<int:pk>/delete/', views.CompanyDeleteView.as_view(), name='company_delete'),
+    path('companies/<int:pk>/employees/', views.CompanyEmployeesView.as_view(), name='company_employees'),
     
     # Employee Frontend URLs
-    path('employees/', EmployeeListView.as_view(), name='employee_list'),
-    path('employees/create/', EmployeeCreateView.as_view(), name='employee_create'),
-    path('employees/<int:pk>/update/', EmployeeUpdateView.as_view(), name='employee_update'),
-    path('employees/<int:pk>/delete/', EmployeeDeleteView.as_view(), name='employee_delete'),
+    path('employees/', views.EmployeeListView.as_view(), name='employee_list'),
+    path('employees/create/', views.EmployeeCreateView.as_view(), name='employee_create'),
+    path('employees/<int:pk>/update/', views.EmployeeUpdateView.as_view(), name='employee_update'),
+    path('employees/<int:pk>/delete/', views.EmployeeDeleteView.as_view(), name='employee_delete'),
     
     # Analytics URL
-    path('analytics/', AnalyticsDashboardView.as_view(), name='analytics'),
-    
-    # API URLs for Companies
-    path('api/companies/', CompanyViewSet.as_view({'get': 'list', 'post': 'create'}), name='api_company_list'),
-    path('api/companies/<int:pk>/', CompanyViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='api_company_detail'),
-    
-    # API URLs for Employees
-    path('api/employees/', EmployeeViewSet.as_view({'get': 'list', 'post': 'create'}), name='api_employee_list'),
-    path('api/employees/<int:pk>/', EmployeeViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='api_employee_detail'),
+    path('analytics/', views.AnalyticsDashboardView.as_view(), name='analytics'),
 ]

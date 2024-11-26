@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
@@ -11,7 +11,15 @@ from .forms import CompanyForm, EmployeeForm
 
 # Frontend Views
 class HomeView(TemplateView):
-    template_name = 'base.html'
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_companies'] = Company.objects.count()
+        context['total_employees'] = Employee.objects.count()
+        context['recent_companies'] = Company.objects.order_by('-created_at')[:5]
+        context['recent_employees'] = Employee.objects.order_by('-created_at')[:5]
+        return context
 
 class CompanyListView(ListView):
     template_name = 'company_list.html'
@@ -46,6 +54,16 @@ class CompanyDeleteView(DeleteView):
     template_name = 'company_confirm_delete.html'
     success_url = reverse_lazy('company_list')
 
+class CompanyDetailView(DetailView):
+    model = Company
+    template_name = 'company_detail.html'
+    context_object_name = 'company'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['employees'] = self.object.employee_set.all()
+        return context
+
 class EmployeeListView(ListView):
     template_name = 'employee_list.html'
     model = Employee
@@ -78,6 +96,21 @@ class EmployeeDeleteView(DeleteView):
     model = Employee
     template_name = 'employee_confirm_delete.html'
     success_url = reverse_lazy('employee_list')
+
+class CompanyEmployeesView(ListView):
+    template_name = 'company_employees.html'
+    model = Employee
+    context_object_name = 'employees'
+
+    def get_queryset(self):
+        company_id = self.kwargs.get('pk')
+        return Employee.objects.filter(company_id=company_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        company_id = self.kwargs.get('pk')
+        context['company'] = Company.objects.get(id=company_id)
+        return context
 
 class AnalyticsDashboardView(TemplateView):
     template_name = 'analytics_dashboard.html'

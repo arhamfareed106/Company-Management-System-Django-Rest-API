@@ -9,67 +9,60 @@ class Command(BaseCommand):
     help = 'Populate database with sample data'
 
     def handle(self, *args, **kwargs):
-        # Clear existing data
+        self.stdout.write('Clearing existing data...')
         Company.objects.all().delete()
+        Employee.objects.all().delete()
+        Project.objects.all().delete()
         
         # Sample company data
         companies = [
             {
                 'name': 'TechCorp Solutions',
-                'type': 'IT',
+                'type': 'CORP',
                 'revenue': 5000000,
                 'location': 'Silicon Valley',
             },
             {
-                'name': 'MobileApp Innovations',
-                'type': 'MOBILE',
+                'name': 'FinTech Innovations LLC',
+                'type': 'LLC',
                 'revenue': 2500000,
                 'location': 'New York',
             },
             {
-                'name': 'WebDev Masters',
-                'type': 'WEB',
+                'name': 'HealthCare Partners',
+                'type': 'PART',
                 'revenue': 1500000,
-                'location': 'Austin',
-            },
-            {
-                'name': 'AI Research Labs',
-                'type': 'AI',
-                'revenue': 3500000,
                 'location': 'Boston',
             },
             {
-                'name': 'DataScience Pro',
-                'type': 'DATA',
+                'name': 'EduTech Ventures',
+                'type': 'CORP',
+                'revenue': 3500000,
+                'location': 'Austin',
+            },
+            {
+                'name': 'Retail Solutions Inc',
+                'type': 'CORP',
                 'revenue': 2000000,
                 'location': 'Seattle',
             }
         ]
 
-        # Create companies
+        self.stdout.write('Creating companies...')
         created_companies = []
         for company_data in companies:
             company = Company.objects.create(
                 name=company_data['name'],
                 type=company_data['type'],
-                revenue=company_data['revenue'],
                 location=company_data['location'],
-                about=f"Leading provider of {company_data['type']} solutions",
                 website=f"https://www.{company_data['name'].lower().replace(' ', '')}.com",
-                founded_date=timezone.now().date() - timedelta(days=random.randint(365, 3650))
+                established_date=timezone.now().date() - timedelta(days=random.randint(365, 3650)),
+                description=f"Leading provider of innovative solutions in {company_data['location']}",
+                created_at=timezone.now(),
+                updated_at=timezone.now()
             )
             created_companies.append(company)
-
-        # Sample skills for different positions
-        skills_by_position = {
-            'MANAGER': ['Leadership', 'Strategy', 'Team Building', 'Project Management', 'Agile', 'Budget Management'],
-            'DEVELOPER': ['Python', 'JavaScript', 'React', 'Django', 'Node.js', 'AWS', 'Docker'],
-            'LEAD': ['Architecture', 'Team Leadership', 'Code Review', 'Agile', 'System Design', 'Mentoring'],
-            'DESIGNER': ['UI/UX', 'Figma', 'Adobe XD', 'Wireframing', 'User Research', 'Design Systems'],
-            'ANALYST': ['Data Analysis', 'SQL', 'Python', 'Tableau', 'Business Intelligence', 'Statistics'],
-            'DEVOPS': ['Docker', 'Kubernetes', 'AWS', 'CI/CD', 'Jenkins', 'Terraform', 'Linux'],
-            'QA': ['Testing', 'Automation', 'Selenium', 'Test Planning', 'Bug Tracking', 'API Testing']
-        }
+            self.stdout.write(f'Created company: {company.name}')
 
         # Sample names for more realistic data
         first_names = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph',
@@ -79,35 +72,34 @@ class Command(BaseCommand):
         last_names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
                      'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson']
 
-        # Create employees with realistic distribution
+        self.stdout.write('Creating employees...')
+        # Create employees for each company
         for company in created_companies:
-            # Define department distribution for 50 employees
+            # Define department distribution
             department_distribution = {
-                'DEVELOPER': 20,  # 40% developers
-                'QA': 7,         # 14% QA
-                'ANALYST': 5,    # 10% analysts
-                'DESIGNER': 5,   # 10% designers
-                'DEVOPS': 5,     # 10% devops
-                'LEAD': 5,       # 10% team leads
-                'MANAGER': 3     # 6% managers
+                'MGR': 3,    # Managers
+                'DEV': 20,   # Developers
+                'DES': 5,    # Designers
+                'HR': 4,     # HR
+                'SALES': 8,  # Sales
+                'OTHER': 5   # Other roles
             }
             
             # Create employees for each department
             for position, count in department_distribution.items():
                 for i in range(count):
                     name = f"{random.choice(first_names)} {random.choice(last_names)}"
-                    email = f"{name.lower().replace(' ', '.')}.{position.lower()}.{random.randint(100, 999)}@{company.name.lower().replace(' ', '')}.com"
+                    email = f"{name.lower().replace(' ', '.')}.{random.randint(100, 999)}.{position.lower()}@{company.name.lower().replace(' ', '')}.com"
                     
                     # Experience and salary calculation
                     experience_years = random.randint(1, 15)
                     base_salary = {
-                        'MANAGER': 120000,
-                        'LEAD': 110000,
-                        'DEVELOPER': 95000,
-                        'DESIGNER': 85000,
-                        'ANALYST': 80000,
-                        'DEVOPS': 100000,
-                        'QA': 75000
+                        'MGR': 120000,
+                        'DEV': 95000,
+                        'DES': 85000,
+                        'HR': 65000,
+                        'SALES': 75000,
+                        'OTHER': 60000
                     }
                     
                     experience_factor = 0.8 + (experience_years * 0.04)
@@ -125,77 +117,66 @@ class Command(BaseCommand):
                         [p[0] for p in performance_weights],
                         weights=[p[1] for p in performance_weights]
                     )[0]
-                    
-                    # Projects completed based on experience and performance
-                    base_projects = experience_years * 2
-                    performance_multiplier = {'EXC': 1.5, 'GOOD': 1.2, 'AVG': 1.0, 'BELOW': 0.8, 'POOR': 0.6}
-                    projects_completed = int(base_projects * performance_multiplier[performance_rating])
+
+                    hire_date = timezone.now().date() - timedelta(days=int(experience_years * 365))
                     
                     employee = Employee.objects.create(
                         name=name,
                         email=email,
-                        address=f"{random.randint(100, 9999)} {random.choice(['Main', 'Oak', 'Maple', 'Cedar', 'Pine'])} {random.choice(['Street', 'Avenue', 'Road', 'Boulevard'])}",
                         phone=f"+1-{random.randint(200, 999)}-{random.randint(100, 999)}-{random.randint(1000, 9999)}",
-                        about=f"Experienced {position.lower()} with {experience_years} years of experience in {company.type} technologies",
                         position=position,
                         company=company,
+                        hire_date=hire_date,
                         salary=salary,
                         performance_rating=performance_rating,
-                        projects_completed=projects_completed,
-                        skills=json.dumps(random.sample(skills_by_position[position], min(5, len(skills_by_position[position])))),
-                        hire_date=timezone.now().date() - timedelta(days=int(experience_years * 365))
+                        projects_completed=random.randint(1, 20),
+                        is_active=random.choices([True, False], weights=[0.95, 0.05])[0],
+                        created_at=timezone.now(),
+                        updated_at=timezone.now()
                     )
+                    self.stdout.write(f'Created employee: {employee.name} ({position})')
 
+        self.stdout.write('Creating projects...')
         # Create projects
-        project_types = [
+        project_names = [
             'Mobile App Development', 'Cloud Migration', 'E-commerce Platform',
-            'AI Integration', 'Data Analytics Dashboard', 'Security Upgrade',
-            'Infrastructure Modernization', 'Customer Portal', 'API Gateway'
+            'AI Integration', 'Data Analytics', 'Security Upgrade',
+            'Infrastructure Update', 'Customer Portal', 'API Gateway'
         ]
         
         for company in created_companies:
-            num_projects = random.randint(5, 8)
+            num_projects = random.randint(3, 6)
+            employees = list(company.employee_set.all())
+            
             for i in range(num_projects):
-                start_date = timezone.now().date() - timedelta(days=random.randint(30, 365))
-                project_type = random.choice(project_types)
-                
-                # Project budget based on type and company revenue
-                base_budget = random.randint(100000, 500000)
-                revenue_factor = company.revenue / 2000000
-                budget = int(base_budget * revenue_factor)
-                
-                project = Project.objects.create(
-                    name=f"{company.name} - {project_type}",
-                    description=f"Strategic {project_type.lower()} project aimed at enhancing {company.name}'s capabilities",
-                    company=company,
-                    start_date=start_date,
-                    status=random.choice(['PLAN', 'PROG', 'TEST', 'COMP', 'HOLD']),
-                    budget=budget,
-                    technologies=json.dumps(random.sample([
-                        'Python', 'JavaScript', 'React', 'Django', 'Docker', 'AWS',
-                        'Kubernetes', 'MongoDB', 'PostgreSQL', 'Redis', 'GraphQL'
-                    ], 4)),
-                    completion_percentage=random.randint(0, 100)
+                project_name = random.choice(project_names)
+                status = random.choice(['PLAN', 'PROG', 'COMP', 'HOLD'])
+                completion = 100 if status == 'COMP' else (
+                    random.randint(0, 20) if status == 'PLAN'
+                    else random.randint(20, 90) if status == 'PROG'
+                    else random.randint(0, 100)
                 )
                 
-                # Add team members with appropriate roles
-                employees = list(company.employee_set.all())
+                start_date = timezone.now().date() - timedelta(days=random.randint(30, 365))
+                end_date = start_date + timedelta(days=random.randint(90, 365)) if status == 'COMP' else None
                 
-                # Ensure project has required roles
-                required_roles = ['MANAGER', 'LEAD', 'DEVELOPER', 'QA']
-                team_members = []
+                project = Project.objects.create(
+                    name=f"{company.name} - {project_name}",
+                    description=f"Strategic {project_name.lower()} project for {company.name}",
+                    company=company,
+                    start_date=start_date,
+                    end_date=end_date,
+                    status=status,
+                    budget=random.randint(50000, 500000),
+                    completion_percentage=completion,
+                    created_at=timezone.now() - timedelta(days=random.randint(30, 365)),
+                    updated_at=timezone.now() - timedelta(days=random.randint(0, 30))
+                )
                 
-                for role in required_roles:
-                    role_employees = [e for e in employees if e.position == role]
-                    if role_employees:
-                        team_members.append(random.choice(role_employees))
+                # Assign random employees to the project
+                num_team_members = random.randint(3, 10)
+                project.employees.add(*random.sample(employees, min(num_team_members, len(employees))))
                 
-                # Add additional team members
-                remaining_employees = [e for e in employees if e not in team_members]
-                additional_members = random.randint(3, 7)
-                if remaining_employees:
-                    team_members.extend(random.sample(remaining_employees, min(additional_members, len(remaining_employees))))
-                
-                project.team_members.add(*team_members)
+                self.stdout.write(f'Created project: {project.name}')
 
-        self.stdout.write(self.style.SUCCESS('Successfully populated database with enhanced sample data'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated database with sample data'))
