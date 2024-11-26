@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade-in max-w-2xl mx-auto">
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-2xl font-bold text-white">
+                {% if company %}Edit Company{% else %}Create New Company{% endif %}
+            </h1>
+        </div>
+
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <!-- Name -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-300">Company Name</label>
+                    <input type="text" name="name" id="name" required
+                           class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           value="{{ company.name|default:'' }}">
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-300">Location</label>
+                    <input type="text" name="location" id="location" required
+                           class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           value="{{ company.location|default:'' }}">
+                </div>
+
+                <!-- Type -->
+                <div>
+                    <label for="type" class="block text-sm font-medium text-gray-300">Company Type</label>
+                    <select name="type" id="type" required
+                            class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select a type</option>
+                        <option value="IT" {% if company.type == 'IT' %}selected{% endif %}>IT</option>
+                        <option value="Non IT" {% if company.type == 'Non IT' %}selected{% endif %}>Non IT</option>
+                        <option value="Mobile Phone" {% if company.type == 'Mobile Phone' %}selected{% endif %}>Mobile Phone</option>
+                    </select>
+                </div>
+
+                <!-- About -->
+                <div>
+                    <label for="about" class="block text-sm font-medium text-gray-300">About</label>
+                    <textarea name="about" id="about" rows="4" required
+                              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ company.about|default:'' }}</textarea>
+                </div>
+            </div>
+
+            {% if form.errors %}
+            <div class="bg-red-900 text-white px-4 py-3 rounded-md">
+                <p class="font-bold">Please correct the following errors:</p>
+                <ul class="list-disc list-inside">
+                    {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ field }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'company-list' %}"
+                   class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {% if company %}Update{% else %}Create{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

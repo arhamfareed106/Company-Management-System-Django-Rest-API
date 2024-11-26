@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen animate-fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl font-bold text-white mb-8">Analytics Dashboard</h1>
+
+        <!-- Company Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Company Overview</h3>
+                <div class="space-y-3">
+                    <p class="text-gray-300">Total Companies: {{ company_count }}</p>
+                    <p class="text-gray-300">Active Companies: {{ active_companies }}</p>
+                    <p class="text-gray-300">Total Revenue: ${{ total_revenue }}</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Employee Statistics</h3>
+                <div class="space-y-3">
+                    <p class="text-gray-300">Total Employees: {{ employee_count }}</p>
+                    <p class="text-gray-300">Avg Salary: ${{ avg_salary }}</p>
+                    <p class="text-gray-300">Top Performance: {{ top_performers }}%</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Project Metrics</h3>
+                <div class="space-y-3">
+                    <p class="text-gray-300">Active Projects: {{ active_projects }}</p>
+                    <p class="text-gray-300">Completed Projects: {{ completed_projects }}</p>
+                    <p class="text-gray-300">Avg Completion: {{ avg_completion }}%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Distribution -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Department Distribution</h3>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Performance Distribution</h3>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Timeline -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-white mb-4">Project Timeline</h3>
+            <div class="relative" style="height: 200px;">
+                <canvas id="projectTimeline"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Performers Table -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Top Performers</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Employee</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Company</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Projects</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for employee in top_employees %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.get_position_display }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.company.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.projects_completed }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-300">{{ employee.get_performance_rating_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Department Distribution Chart
+    const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+    new Chart(departmentCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ department_labels|safe }},
+            datasets: [{
+                data: {{ department_data|safe }},
+                backgroundColor: [
+                    '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+                    '#8B5CF6', '#EC4899', '#6366F1'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#D1D5DB'
+                    }
+                }
+            }
+        }
+    });
+
+    // Performance Distribution Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(performanceCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ performance_labels|safe }},
+            datasets: [{
+                label: 'Employees',
+                data: {{ performance_data|safe }},
+                backgroundColor: '#3B82F6'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#374151'
+                    },
+                    ticks: {
+                        color: '#D1D5DB'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: '#374151'
+                    },
+                    ticks: {
+                        color: '#D1D5DB'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#D1D5DB'
+                    }
+                }
+            }
+        }
+    });
+
+    // Project Timeline Chart
+    const timelineCtx = document.getElementById('projectTimeline').getContext('2d');
+    new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+            labels: {{ timeline_labels|safe }},
+            datasets: [{
+                label: 'Active Projects',
+                data: {{ timeline_data|safe }},
+                borderColor: '#3B82F6',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#374151'
+                    },
+                    ticks: {
+                        color: '#D1D5DB'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: '#374151'
+                    },
+                    ticks: {
+                        color: '#D1D5DB'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#D1D5DB'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

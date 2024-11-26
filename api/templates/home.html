@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade-in min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-white mb-8">Enterprise Management System</h1>
+            <p class="text-xl text-gray-300 mb-12">Manage your companies and employees efficiently</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Companies Card -->
+            <a href="{% url 'company-list' %}" class="block">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:bg-gray-700 transition duration-300">
+                    <h2 class="text-2xl font-semibold text-white mb-4">Companies</h2>
+                    <p class="text-gray-300">View and manage your company portfolio. Add new companies, update information, and track company details.</p>
+                </div>
+            </a>
+
+            <!-- Employees Card -->
+            <a href="{% url 'employee-list' %}" class="block">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:bg-gray-700 transition duration-300">
+                    <h2 class="text-2xl font-semibold text-white mb-4">Employees</h2>
+                    <p class="text-gray-300">Manage your workforce. Add new employees, update their information, and track their assignments.</p>
+                </div>
+            </a>
+
+            <!-- Analytics Card -->
+            <a href="{% url 'analytics-dashboard' %}" class="block">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:bg-gray-700 transition duration-300">
+                    <h2 class="text-2xl font-semibold text-white mb-4">Analytics</h2>
+                    <p class="text-gray-300">View comprehensive analytics and insights about your companies, employees, and projects performance.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- API Links -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-semibold text-white mb-6">API Access</h2>
+            <div class="space-x-4">
+                <a href="/api/companies/" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">
+                    Companies API
+                </a>
+                <a href="/api/employees/" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">
+                    Employees API
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
